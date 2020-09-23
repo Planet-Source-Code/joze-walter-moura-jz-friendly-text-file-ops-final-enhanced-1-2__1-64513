@@ -1,0 +1,170 @@
+.-----------------------------------------------------------------------
+'  JzTxFile - A Friendly type Text Files I-O Operations OCX
+`=======================================================================
+  Version:- 1.0.00 2006/03/01 By JOZE (from Rio de Janeiro, BR)
+
+Text Files are as Random Files: Lines can be accessed directly by a 'Line
+Number', any ordering, toward, forward, etc.
+
+No APIs, No Classes - it  s a simple Activex Control to be dragged on the
+Form, with any number of instances.
+
+The process consists:
+
+a) Retrieve all line records (from a Original File - or from a
+   previous backup made) into a dynamic array, the WorkBench;
+   Its essential provide a significative   .FileName   content.
+   Do it using .OpenFile or .ReadFromBackup (needs previous
+   .MakeABackup) respective commands.
+
+b) So, lines will be from 1 to   .TotalLines  , a all times
+   updated property. The WorkBench will be scenario for GetLine
+   String Function and PutLine, AddLine, InsertLine, RemoveLine
+   commands.
+
+c) The actual WorkBench can be any time:
+
+   - .UpDate - rewrites it over Original File.
+   - .MakeABackup - creates new same filename in other folder as
+                    .BakFileName contents (if <empty> will be
+                    auto filled from .FileName in a "/Bak" sub
+                    folder)
+   - .SaveAsNewFile - creates a new file where .NewFileName (If
+                    <empty> Will Be auto filled from .FileName
+                    in a "/New" subfolder.
+
+All Operations, when completed, will cause a   OPComplete(Msg)
+event. If a empty message, Operation was successfull. If a string,
+means a failled operation, wich message became with the Op Name
+and problem related. You can intercept mode administrate program
+actions about it (silent, message box, etc) or merely checks True/
+False stats returning all commands.
+
+.----------------------------------------------------------------------
+  Comments: I wrote this code to be as simple as possible to made
+            it comprehensive and easy to anything customize. So,
+            some redundances will be found, ok?
+
+  The "TotalLines" and "OpenFile" names are for remember the excellent
+  FSText.OCX control, freeware but not openned source, that has similar
+  functions.
+
+   I'D LIKE RECEIVE ANY COMMENTS OR CODE MODIFICATIONS YOU HAVE, OK?
+
+   Joze.
+   jozew@globo.com
+
+'.-------------------------------------------------------------
+' JzTxFile v1.2.00 (2006/03/03) by JOZE jozew@globo.com
+'==============================================================
+' FIXED: <no fixes>
+'
+' ENHANCED:
+'   - All Sub commands were rewrote as Boolean Functions for tests.
+'   - 2 new commands: .OpenHole and .CloseHole to speed Insertion of
+'     a group of sucessive lines after certain line in WorkBench.
+'   - 3 new functions: .Exists, .BakExists and .NewExists, returns
+'     the Original, the Backup and the Save As New file existences.
+'   - Some code optimizations and more prevent error messages.
+'
+' KNOW ERRORS: <no know errors>
+'
+'`-------------------------------------------------------------
+.-----------------------------------------------------------------------
+'   JzTxFile v1.0.00 (2006/03/01) by JOZE jozew@globo.com
+`=======================================================================
+   FIXED: <no fixes 1st version>
+
+   ENHANCED: <no enhances 1st version>
+
+   KNOW ERRORS: <no know errors at 1st version>
+
+`-----------------------------------------------------------------------
+
+JzFIOTxFile - Friendly Text Files I-O Operations v1.0.00 ® Joze 2006/03/01
+
+EVENTS:
+
+OpCompletes(Message As String) :- Occurs when any Text Operation is finished.   Message   argument will return <Empty> =Sucessfull or <anysize> =Operation &  message error.
+
+PROPERTIES:
+
+FileSpec As String :- Essential Original Input File complete pathfilename
+
+TotalLines As Long :- All time maximum number of lines in workbench indicator
+
+BakFileSpec As String :- Pathfilename to be used for backup purposes (see MakeABackup and ReadFromBackup methods). If is empty at backup commands it will be auto filled by using the FileSpec context but creating a \Bak\ Subfolder.
+
+NewFileSpec As String :- Pathfilename to be used for   Save As   purposes. If is empty at   SaveAsNewFile   command it will be auto filled by using the FileSpec context but creating a \New\ Subfolder.
+
+METHODS
+(All returns True/False as sucessful or not):
+
+OpenFile() :- Open   FileSpec   as Input and read all lines to workbench.
+
+GetLine(LineNumber As Long) As String :-Returns single line string indexed by <LineNumber> order in workbench.
+PutLine(LineNumber As Long, txtLine As String) :- Puts the  <txtLine>  over the <LineNumber> indexed in workbench.
+AddLine(txtLine As String) :- Appends<txtLine>to workbench, at end.
+RemoveLine(LineNumber As Long, Optional ToLine As Long = 0) :- Delete the <LineNumber> from workbench. Optional <ToLine>  if present, will remove the range from ... to.
+InsertLine(LineNumber As Long,<txtLine>As String) :- Inserts  <txtLine>  AFTER <LineNumber> of workbench (zero value will insert at begin).
+
+OpenHole(LineNumber As Long) :- Same as 'InsertLine' but only make a hole after 'LineNumber' so that all '.AddLine' will put successive lines at same local. Use .CloseHole to finish it.
+CloseHole() :- Rejoins the WorkBench after 'OpenHole' and sucessive 'AddLine's. If you OpenHole and never CloseHole, all last splited lines will stay out WorkBench, maybe lost.
+
+MakeABackup() :- Will save a backup of  workbench to file as indicated in BakFileSpec path (see also ReadFromBackup).
+ReadFromBackup() :- Will reload the workbench by reading a previous backup (see MakeABackup and BakFileSpec).
+
+FileUpdate() :- Will save all workbench to input file indicated in FileSpec path. Previous existence will be killed.
+SaveAsNewFile() :- Will write all workbench to output file indicated in NewFileSpec path. Previous existence will be killed.
+
+Clear() :- Will empty the workbench (all lines removed).
+
+Exists() :- Function returns True/False if Original file as 'FileSpec' exists in its Directory.
+BakExists() :- Function returns True/False if Backup file as 'BakFileSpec' exists in its Directory.
+NewExists() :- Function returns True/False if Backup file as 'NewFileSpec' exists in its Directory.
+
+EXAMPLES:
+
+1. Reading all lines, modify some one, updates same file
+
+   Dim L As Long
+   Dim xLin As String
+   With JzTxFile1
+     .FileName = "C:\Texts\MyText.Txt"
+     .OpenFile
+	 L = 1
+	 Do While L <= .TotalLines
+	     xLin = .GetLine(L)
+         If [lin is to be excluded] Then
+		    .RemoveLine L
+			  being remove, don  t increments L
+	     Else
+            If [lin is to be modified] Then
+		         modify xLin
+		       .PutLine L, xLin
+			End If
+			L = L + 1   next line
+		 End If
+     Loop
+       Appends some data
+	 xlin = "End-Of-File"
+	 .AddLine xLin
+       efectivate all modifications
+	 .UpdateFile
+   End With
+
+2. See above : example to remove a sequence of lines:
+         ...
+         If [lin is to be excluded] Then
+		    .RemoveLine L, L + 3    from L to L+3 = 4 lines
+			  being remove, don  t increments L
+	     Else
+         ...
+3. Shure sucessfull any Command, e.g.:
+   If .PutLine(L) then
+      MsgBox "Modified Line no." & Cstr(L)
+   End If
+
+-oOo-oOo-oOo-
+
+

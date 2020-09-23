@@ -1,0 +1,35 @@
+JzFIOTxFile - Friendly I-O File Text Operations OCX v1.0.00 ® Joze
+------------------------------------------------------------------
+There are 2 Projects on same folder:
+
+JzTxSample.VbP - type EXE, in wich you can test and observe results,
+                 features, source code, etc.
+
+JzFIOTxFile.VbP - type CONTROL, will produce respective OCX.
+
+So, if you want a OCX:
+
+1. Open JzFIOTxFile.VbP project;
+2. Change control property 'Public' to 'True'
+3. Chose Menu: File / Make JzFIOTxFile.OCX
+
+Now the component is able to be include in Apps projects.
+
+If want study it:
+1. Open JzTxSample.VbP project;
+2. Change control property 'Public' to 'False'
+3. Run it
+- Begin actions by choosing any type text file Filename (any size)
+- Note that any parameters discrepances will generate 'Do Nothing'
+  or a Standard Message Error.
+
+ANY COMMENTS, CODE DEBUG OR ENHANCES WILL BE WELLCOME, PLEASE:
+jozew@globo.com (RIO DE JANEIRO, BRAZIL), THANK'S.
+
+-oOo-oOo-oOo-
+
+
+
+
+
+
